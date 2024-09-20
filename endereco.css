@@ -1,0 +1,53 @@
+/* Estilização do formulário */
+form {
+    max-width: 600px; /* Limita a largura do formulário */
+    margin: 20px auto; /* Centraliza o formulário na página */
+    padding: 20px; /* Adiciona espaço interno */
+    border: 1px solid #ccc; /* Borda do formulário */
+    border-radius: 8px; /* Cantos arredondados */
+    background-color: #f9f9f9; /* Cor de fundo */
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+ 
+/* Estilização das labels */
+.form-label {
+    display: block; /* Faz a label ocupar toda a largura disponível */
+    margin-bottom: 5px; /* Espaço abaixo da label */
+    font-weight: bold; /* Torna a fonte mais forte */
+}
+ 
+/* Estilização dos inputs */
+.form-control {
+    width: 95%; /* Faz os inputs ocuparem toda a largura disponível */
+    padding: 10px; /* Espaço interno dos inputs */
+    margin-bottom: 15px; /* Espaço abaixo dos inputs */
+    border: 1px solid #ccc; /* Borda dos inputs */
+    border-radius: 4px; /* Cantos arredondados */
+    transition: border-color 0.3s; /* Transição suave para a cor da borda */
+}
+ 
+.form-control:focus {
+    border-color: #007bff; /* Cor da borda ao focar */
+    outline: none; /* Remove o contorno padrão */
+}
+ 
+/* Estilização do botão */
+.btn {
+    padding: 10px 15px; /* Espaço interno do botão */
+    border: none; /* Remove a borda padrão */
+    border-radius: 4px; /* Cantos arredondados */
+    color: #fff; /* Cor do texto do botão */
+    background-color: #007bff; /* Cor de fundo do botão */
+    cursor: pointer; /* Muda o cursor ao passar sobre o botão */
+    transition: background-color 0.3s; /* Transição suave para a cor de fundo */
+ 
+}
+ 
+.btn:hover {
+    background-color: #0056b3; /* Cor do botão ao passar o mouse */
+}
+ 
+h2{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    text-align: center;
+}
