@@ -55,89 +55,129 @@ Este projeto é de código aberto e pode ser utilizado e modificado conforme nec
 
 ### codigo js
 
-1 Modo Estrito: Ativa um modo que ajuda a evitar erros comuns no JavaScript.
+### README - Funções de Validação e Busca de Endereço
 
-2 limparFormulario: Limpa todos os campos do formulário, deixando-os vazios.
+Este documento explica as funções JavaScript para validar e buscar informações de um endereço usando o CEP.
 
- 3 eNumero: Verifica se uma string contém apenas dígitos.
+## Funções JavaScript
 
-4 cepValido: Confirma se um CEP tem exatamente 8 caracteres numéricos.
+### 1. `buscarEndereco()`
 
-preencherFormulario: Preenche os campos do formulário com os dados de um endereço, corrigindo os campos para que usem as propriedades corretas do objeto endereco.
+Esta função busca o endereço baseado no CEP informado pelo usuário.
+
+```javascript
+async function buscarEndereco() {
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
+    const resultado = document.getElementById('resultado');
+    if (cep.length !== 8) {
+        resultado.innerHTML = 'CEP inválido.';
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+
+        if (data.erro) {
+            resultado.innerHTML = 'CEP não encontrado.';
+        } else {
+            document.getElementById('rua').value = data.logradouro;
+            document.getElementById('bairro').value = data.bairro;
+            document.getElementById('cidade').value = data.localidade;
+            document.getElementById('estado').value = data.uf;
+            resultado.innerHTML = '';
+        }
+    } catch (error) {
+        resultado.innerHTML = 'Erro ao buscar o endereço.';
+    }
+}
+```
+
+#### Como Funciona:
+- **Entrada**: O CEP é extraído do campo de entrada e formatado.
+- **Validação**: Verifica se o CEP possui 8 dígitos. Se não, exibe uma mensagem de erro.
+- **Busca**: Realiza uma chamada à API `viaCEP` para obter informações do endereço.
+- **Preenchimento**: Preenche os campos de endereço se o CEP for válido.
+- **Tratamento de Erros**: Exibe uma mensagem em caso de falha na busca.
+
+### 2. `validarEmail(email)`
+
+Valida se o email está em um formato correto.
+
+```javascript
+function validarEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+}
+```
+
+#### Como Funciona:
+- Usa uma expressão regular para verificar se o email tem um formato válido.
+- Retorna `true` se o email for válido, `false` caso contrário.
+
+### 3. `validarCPF(cpf)`
+
+Valida o CPF com base em regras simples.
+
+```javascript
+function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, '');
+    if (cpf.length !== 11) return false;
+
+    // Validação simplificada do CPF
+    let soma = 0;
+    let resto;
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+
+    soma = 0;
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    return resto === parseInt(cpf.charAt(10));
+}
+```
+
+#### Como Funciona:
+- Remove caracteres não numéricos e verifica se o CPF possui 11 dígitos.
+- Realiza cálculos para validar os dígitos verificadores do CPF.
+- Retorna `true` se o CPF for válido e `false` caso contrário.
+
+### 4. `validarFormulario(event)`
+
+Valida o formulário antes de ser enviado.
+
+```javascript
+function validarFormulario(event) {
+    const email = document.getElementById('email').value;
+    const cpf = document.getElementById('cpf').value;
+
+    if (!validarEmail(email)) {
+        alert('Email inválido!');
+        event.preventDefault();
+    }
+
+    if (!validarCPF(cpf)) {
+        alert('CPF inválido!');
+        event.preventDefault();
+    }
+}
+```
 
 
-### Descrição do Código
+- Obtém os valores do email e CPF do formulário.
+- Chama as funções `validarEmail` e `validarCPF`.
+- Se alguma validação falhar, exibe um alerta e impede o envio do formulário.
 
-1. **Modo Estrito**:
-   ```javascript
-   'use strict';
-   ```
-   Ativa o modo restrito do JavaScript, que ajuda a evitar erros comuns de programação e torna o código mais seguro.
+## Conclusão
 
-2. **Limpeza do Formulário**:
-   ```javascript
-   const limparFormulario = () => {
-       document.getElementById('Logradouro').value = '';
-       document.getElementById('Bairro').value = '';
-       document.getElementById('Localidade').value = '';
-       document.getElementById('UF').value = '';
-       document.getElementById('Numero').value = '';
-       document.getElementById('Complemento').value = '';
-   }
-   ```
-   A função `limparFormulario` é responsável por limpar todos os campos do formulário. Ela redefine o valor de cada campo para uma string vazia.
-
-3. **Validação do CEP**:
-   ```javascript
-   const eNumero = (numero) => /^[0-9]+$/.test(numero);
-   const cepValido = (cep) => cep.length == 8 && eNumero(cep);
-   ```
-   - `eNumero`: Verifica se uma string contém apenas dígitos numéricos.
-   - `cepValido`: Confirma se o CEP tem exatamente 8 caracteres e se todos são números.
-
-4. **Preenchimento do Formulário**:
-   ```javascript
-   const preencherFormulario = (endereco) => {
-       document.getElementById('Logradouro').value = endereco.logradouro;
-       document.getElementById('Bairro').value = endereco.bairro;
-       document.getElementById('Localidade').value = endereco.localidade;
-       document.getElementById('UF').value = endereco.uf;
-   }
-   ```
-   Esta função preenche os campos do formulário com os dados retornados pela API, como logradouro, bairro, localidade e UF (Unidade Federativa).
-
-5. **Pesquisa do CEP**:
-   ```javascript
-   const pesquisarCep = async () => {
-       limparFormulario();
-       const url = `http://viacep.com.br/ws/${cep.value}/json/`;
-
-       if (cepValido(cep.value)) {
-           const dados = await fetch(url);
-           const addres = await dados.json();
-
-           if (addres.hasOwnProperty('erro')) {
-               alert('CEP não encontrado');
-           } else {
-               preencherFormulario(addres);
-           }
-       } else {
-           alert('CEP Incorreto');
-       }
-   }
-   ```
-   - A função `pesquisarCep` é assíncrona e inicia limpando o formulário.
-   - Um URL é gerado utilizando o valor do CEP informado.
-   - Se o CEP for válido, uma requisição `fetch` é feita à API.
-   - Os dados retornados são convertidos para JSON. Se o JSON contém uma propriedade `erro`, um alerta é exibido informando que o CEP não foi encontrado. Caso contrário, o formulário é preenchido com os dados obtidos.
-
-6. **Escutador de Evento**:
-   ```javascript
-   document.getElementById('cep').addEventListener('focusout', pesquisarCep);
-   ```
-   Um evento de `focusout` é adicionado ao campo de CEP. Isso significa que quando o usuário sai do campo (perde o foco), a função `pesquisarCep` será chamada para buscar e preencher os dados automaticamente.
-
-### Conclusão
+Essas funções garantem que os dados do formulário sejam válidos e que as informações de endereço sejam recuperadas corretamente. Para um melhor desempenho, certifique-se de que o HTML e os arquivos CSS estejam corretamente configurados para acompanhar essas funções.
 
 Esse código é uma implementação simples e eficaz para buscar informações de endereço a partir de um CEP, utilizando a API ViaCEP. Ele realiza a validação do CEP, manipula a interface do usuário e lida com respostas da API, tudo de forma assíncrona. Isso melhora a experiência do usuário ao preencher formulários relacionados a endereços.
 

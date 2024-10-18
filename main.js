@@ -1,48 +1,66 @@
-'use strict'; // ativa o modo restrito
-// esse modo faz com o que o JavaScript opere dde forma mais segura e rigorosa, ajudando a evitar erros comuns de programação
-/* Consumo de API https://viacep.com.br/ */
+async function buscarEndereco() {
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
+     const resultado = document.getElementById('resultado');
+        if (cep.length !== 8) {
+           resultado.innerHTML = 'CEP inválido.';
+       return;
+     }
  
-// FUNÇÃO PARA LIMPAR OS CAMPOS PREENCHIDOS
-const limparFormulario = () => {
-    document.getElementById('Logradouro').value = '';
-    document.getElementById('Bairro').value = '';
-    document.getElementById('Localidade').value = '';
-    document.getElementById('UF').value = '';
-    document.getElementById('Numero').value = '';
-    document.getElementById('Complemento').value = '';
-}
+ try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+       const data = await response.json();
  
-// verifica se o cep é válido
-const eNumero = (numero) => /^[0-9]+$/.test(numero);
-const cepValido = (cep) => cep.length == 8 && eNumero(cep); 
- 
-// função responsável por preencher o formulário com as informações da API
-const preencherFormulario = (endereco) => {
-    document.getElementById('Logradouro').value = endereco.logradouro;
-    document.getElementById('Bairro').value = endereco.bairro;
-    document.getElementById('Localidade').value = endereco.localidade;
-    document.getElementById('UF').value = endereco.uf;
-}
- 
-// Função para consumo de API ViaCEP
-const pesquisarCep = async() => {  
-    limparFormulario();   
-    const url = `http://viacep.com.br/ws/${cep.value}/json/`;
- 
-    if(cepValido(cep.value)){
-        const dados = await fetch(url);  
-        const addres = await dados.json(); 
- 
-        if(addres.hasOwnProperty('erro')){ 
-            alert('CEP não encontrado ')
-        }else{
-            preencherFormulario(addres);
+     if (data.erro) {
+           resultado.innerHTML = 'CEP não encontrado.';
+     } else {
+           document.getElementById('rua').value = data.logradouro;
+          document.getElementById('bairro').value = data.bairro;
+         document.getElementById('cidade').value = data.localidade;
+          document.getElementById('estado').value = data.uf;
+         resultado.innerHTML = '';
+              }
+            } catch (error) {
+                resultado.innerHTML = 'Erro ao buscar o endereço.';
+            }
         }
-    }else{
-        alert('CEP Incorreto');
+ 
+        function validarEmail(email) {
+         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+         return re.test(String(email).toLowerCase());
+        }
+ 
+      function validarCPF(cpf) {
+      cpf = cpf.replace(/\D/g, '');
+      if (cpf.length !== 11) return false;
+       // Validação simplificada do CPF
+       let soma = 0;
+    let resto;
+     for (let i = 1; i <= 9; i++) {
+     soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+            }
+     resto = (soma * 10) % 11;
+     if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+            soma = 0;
+     for (let i = 1; i <= 10; i++) {
+          soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+            }
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+  return resto === parseInt(cpf.charAt(10));
+        }
+ 
+     function validarFormulario(event) {
+    const email = document.getElementById('email').value;
+   const cpf = document.getElementById('cpf').value;
+ 
+   if (!validarEmail(email)) {
+        alert('Email inválido!');
+        event.preventDefault();
     }
-}
  
-// chama escutador para disparar ação de preenchimento
-document.getElementById('cep').addEventListener('focusout', pesquisarCep);
- 
+    if (!validarCPF(cpf)) {
+         alert('CPF inválido!');
+        event.preventDefault();
+         }
+  }
